@@ -50,9 +50,22 @@ fun Table(
         items = items,
         style = style,
     ) { tableItemSize ->
-        Column {
+        Column(
+            modifier = Modifier
+                .then(
+                    if (numberOfTopFixes == 0 && numberOfStartFixes == 0) {
+                        Modifier
+                            .horizontalScroll(horizontalScrollState)
+                            .verticalScroll(verticalScrollState)
+                    } else {
+                        Modifier
+                    }
+                ),
+        ) {
             Row {
-                Column {
+                Column(
+                    modifier = Modifier.background(Color.Red),
+                ) {
                     items.take(numberOfTopFixes).forEachIndexed { columnId, columnList ->
                         Row {
                             columnList.take(numberOfStartFixes).forEachIndexed { rowId, item ->
@@ -75,7 +88,15 @@ fun Table(
                     }
                 }
                 Column(
-                    modifier = Modifier.background(Color.LightGray).horizontalScroll(horizontalScrollState),
+                    modifier = Modifier
+                        .background(Color.LightGray)
+                        .then(
+                            if (numberOfTopFixes != 0) {
+                                Modifier.horizontalScroll(horizontalScrollState)
+                            } else {
+                                Modifier
+                            }
+                        )
                 ) {
                     items.take(numberOfTopFixes).forEachIndexed { columnId, columnList ->
                         Row {
@@ -101,46 +122,28 @@ fun Table(
                 }
             }
 
-            Row {
+            Row(
+                modifier = Modifier
+            ) {
                 Column(
                     modifier = Modifier
                         .background(Color.Yellow)
-                        .verticalScroll(verticalScrollState),
-                ) {
-                    items.takeLast(items.size - numberOfTopFixes).forEachIndexed { columnId, columnList ->
-                        Row {
-                            columnList.take(numberOfStartFixes).forEachIndexed { rowId, item ->
-                                Box(
-                                    modifier = Modifier
-                                        .size(
-                                            width = tableItemSize.columnWidthSize[rowId],
-                                            height = tableItemSize.rowHeightSize[columnId + numberOfTopFixes],
-                                        )
-                                        .drawBehind(onDraw = horizontalOnDraw),
-                                    contentAlignment = Alignment.TopStart,
-                                ) {
-                                    Text(
-                                        text = item,
-                                        style = style,
-                                    )
-                                }
+                        .then(
+                            if (numberOfStartFixes != 0) {
+                                Modifier.verticalScroll(verticalScrollState)
+                            } else {
+                                Modifier
                             }
-                        }
-                    }
-                }
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(verticalScrollState)
-                        .horizontalScroll(horizontalScrollState)
+                        ),
                 ) {
                     items.takeLast(items.size - numberOfTopFixes)
                         .forEachIndexed { columnId, columnList ->
                             Row {
-                                columnList.takeLast(items.first().size - numberOfStartFixes).forEachIndexed { rowId, item ->
+                                columnList.take(numberOfStartFixes).forEachIndexed { rowId, item ->
                                     Box(
                                         modifier = Modifier
                                             .size(
-                                                width = tableItemSize.columnWidthSize[rowId + numberOfStartFixes],
+                                                width = tableItemSize.columnWidthSize[rowId],
                                                 height = tableItemSize.rowHeightSize[columnId + numberOfTopFixes],
                                             )
                                             .drawBehind(onDraw = horizontalOnDraw),
@@ -152,6 +155,42 @@ fun Table(
                                         )
                                     }
                                 }
+                            }
+                        }
+                }
+                Column(
+                    modifier = Modifier.then(
+                        if (
+                            numberOfTopFixes != 0 || numberOfStartFixes != 0
+                        ) {
+                            Modifier
+                                .verticalScroll(verticalScrollState)
+                                .horizontalScroll(horizontalScrollState)
+                        } else {
+                            Modifier
+                        }
+                    )
+                ) {
+                    items.takeLast(items.size - numberOfTopFixes)
+                        .forEachIndexed { columnId, columnList ->
+                            Row {
+                                columnList.takeLast(items.first().size - numberOfStartFixes)
+                                    .forEachIndexed { rowId, item ->
+                                        Box(
+                                            modifier = Modifier
+                                                .size(
+                                                    width = tableItemSize.columnWidthSize[rowId + numberOfStartFixes],
+                                                    height = tableItemSize.rowHeightSize[columnId + numberOfTopFixes],
+                                                )
+                                                .drawBehind(onDraw = horizontalOnDraw),
+                                            contentAlignment = Alignment.TopStart,
+                                        ) {
+                                            Text(
+                                                text = item,
+                                                style = style,
+                                            )
+                                        }
+                                    }
                             }
                         }
                 }
