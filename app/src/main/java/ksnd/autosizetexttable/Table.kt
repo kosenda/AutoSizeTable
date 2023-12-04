@@ -11,6 +11,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -45,6 +48,9 @@ fun Table(
     val horizontalScrollState = rememberScrollState()
     val verticalScrollState = rememberScrollState()
 
+    val fixedTop by remember(numberOfTopFixes) { derivedStateOf { numberOfTopFixes > 0 } }
+    val fixedStart by remember(numberOfStartFixes) { derivedStateOf { numberOfStartFixes > 0 } }
+
     AutoSizeTextTable(
         modifier = modifier,
         items = items,
@@ -53,7 +59,7 @@ fun Table(
         Column(
             modifier = Modifier
                 .then(
-                    if (numberOfTopFixes == 0 && numberOfStartFixes == 0) {
+                    if (fixedTop.not() && fixedStart.not()) {
                         Modifier
                             .horizontalScroll(horizontalScrollState)
                             .verticalScroll(verticalScrollState)
@@ -91,7 +97,7 @@ fun Table(
                     modifier = Modifier
                         .background(Color.LightGray)
                         .then(
-                            if (numberOfTopFixes != 0) {
+                            if (fixedTop) {
                                 Modifier.horizontalScroll(horizontalScrollState)
                             } else {
                                 Modifier
@@ -122,14 +128,12 @@ fun Table(
                 }
             }
 
-            Row(
-                modifier = Modifier
-            ) {
+            Row {
                 Column(
                     modifier = Modifier
                         .background(Color.Yellow)
                         .then(
-                            if (numberOfStartFixes != 0) {
+                            if (fixedStart) {
                                 Modifier.verticalScroll(verticalScrollState)
                             } else {
                                 Modifier
@@ -160,9 +164,7 @@ fun Table(
                 }
                 Column(
                     modifier = Modifier.then(
-                        if (
-                            numberOfTopFixes != 0 || numberOfStartFixes != 0
-                        ) {
+                        if (fixedTop || fixedStart) {
                             Modifier
                                 .verticalScroll(verticalScrollState)
                                 .horizontalScroll(horizontalScrollState)
