@@ -28,6 +28,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val type = listOf(
+                0 to 0,
+                0 to 1,
+                1 to 0,
                 1 to 1,
                 1 to 2,
                 2 to 2,
@@ -66,7 +69,7 @@ class MainActivity : ComponentActivity() {
                                     listOf("タイトル10", "111", "あああ", "BBB", "CCC", "C", "C", "C"),
                                     listOf("タイトル11", "111", "あああ", "BBB", "CCC", "C", "C", "DDDDDDD"),
                                     listOf("タイトル12", "111", "あああ", "BBB", "CCC", "C", "C", "C"),
-                                    listOf("タイトル13", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
+                                    listOf("タイトル13", "あああああああ\naaa\naaa\na", "あaaa", "BBB", "CCC", "C", "C", "CCCCCCCCCCCCCCCCCc"),
                                     listOf("タイトル14", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
                                     listOf("タイトル15", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
                                     listOf("タイトル16", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
