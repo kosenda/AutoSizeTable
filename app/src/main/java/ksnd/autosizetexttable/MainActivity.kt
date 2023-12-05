@@ -8,7 +8,6 @@ import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -18,6 +17,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ksnd.autosizetexttable.ui.theme.AutoSizeTextTableTheme
@@ -27,6 +27,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val colorScheme = MaterialTheme.colorScheme
             val type = listOf(
                 0 to 0,
                 0 to 1,
@@ -75,12 +76,26 @@ class MainActivity : ComponentActivity() {
                                     listOf("タイトル16", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
                                     listOf("タイトル17", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
                                     listOf("タイトル18", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
-                                    listOf("タイトル19", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
-                                    listOf("タイトル20", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
+                                    listOf("タイトル19", "あああああああ\naaa\naaa\naaa\n1aaa", "あ", "BBB", "CCC", "C", "C", "C"),
+                                    listOf("タイトル20", "あああああああ\naaa\naaa\naaa\n1aaa", "あ", "BBB", "CCC", "C", "C", "C"),
                                 ),
-                                numberOfTopFixes = type[typeIndex].first,
-                                numberOfStartFixes = type[typeIndex].second,
-                                style = LocalTextStyle.current.merge(fontSize = 18.sp),
+                                style = { _, _ -> TextStyle.Default.merge(fontSize = 18.sp) },
+                                outlineColor = colorScheme.outline,
+                                textColor = { _, _ -> colorScheme.onSurface },
+                                backgroundColor = { columnId, rowId ->
+                                    when {
+                                        columnId in 0..<type[typeIndex].first -> {
+                                            colorScheme.primaryContainer
+                                        }
+                                        rowId in 0..<type[typeIndex].second -> {
+                                            colorScheme.tertiaryContainer
+                                        }
+                                        columnId % 2 == 0 -> colorScheme.surface
+                                        else -> colorScheme.inverseOnSurface
+                                    }
+                                },
+                                fixedTopSize = type[typeIndex].first,
+                                fixedStartSize = type[typeIndex].second,
                             )
                         }
                     }
