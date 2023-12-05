@@ -28,28 +28,33 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun Table(
     modifier: Modifier = Modifier,
     items: List<List<String>>,
-    style: TextStyle,
-    numberOfTopFixes: Int = 1,
-    numberOfStartFixes: Int = 1,
+    style: (columnId: Int, rowId: Int) -> TextStyle = { _, _ -> TextStyle.Default },
+    textColor: (columnId: Int, rowId: Int) -> Color = { _, _ -> Color.Unspecified },
+    backgroundColor: (columnId: Int, rowId: Int) -> Color = { _, _ -> Color.Unspecified },
+    outlineColor: Color = Color.Black,
+    fixedTopSize: Int = 1,
+    fixedStartSize: Int = 1,
 ) {
-    val horizontalOnDraw: DrawScope.() -> Unit = {
+    val horizontalScrollState = rememberScrollState()
+    val verticalScrollState = rememberScrollState()
+
+    val fixedTop by remember(fixedTopSize) { derivedStateOf { fixedTopSize > 0 } }
+    val fixedStart by remember(fixedStartSize) { derivedStateOf { fixedStartSize > 0 } }
+
+    val outlineOnDraw: DrawScope.() -> Unit = {
         drawRect(
-            color = Color.Black,
+            color = outlineColor,
             topLeft = Offset(0f, 0f),
             size = Size(width = size.width, height = size.height),
             style = Stroke(width = 3f),
         )
     }
-    val horizontalScrollState = rememberScrollState()
-    val verticalScrollState = rememberScrollState()
-
-    val fixedTop by remember(numberOfTopFixes) { derivedStateOf { numberOfTopFixes > 0 } }
-    val fixedStart by remember(numberOfStartFixes) { derivedStateOf { numberOfStartFixes > 0 } }
 
     AutoSizeTextTable(
         modifier = modifier,
@@ -69,24 +74,24 @@ fun Table(
                 ),
         ) {
             Row {
-                Column(
-                    modifier = Modifier.background(Color.Red),
-                ) {
-                    items.take(numberOfTopFixes).forEachIndexed { columnId, columnList ->
+                Column {
+                    items.take(fixedTopSize).forEachIndexed { columnId, columnList ->
                         Row {
-                            columnList.take(numberOfStartFixes).forEachIndexed { rowId, item ->
+                            columnList.take(fixedStartSize).forEachIndexed { rowId, item ->
                                 Box(
                                     modifier = Modifier
                                         .size(
                                             width = tableItemSize.columnWidthSize[rowId],
                                             height = tableItemSize.rowHeightSize[columnId],
                                         )
-                                        .drawBehind(onDraw = horizontalOnDraw),
+                                        .background(color = backgroundColor(columnId, rowId))
+                                        .drawBehind(onDraw = outlineOnDraw),
                                     contentAlignment = Alignment.TopStart,
                                 ) {
                                     Text(
                                         text = item,
-                                        style = style,
+                                        style = style(columnId, rowId),
+                                        color = textColor(columnId, rowId),
                                     )
                                 }
                             }
@@ -95,7 +100,6 @@ fun Table(
                 }
                 Column(
                     modifier = Modifier
-                        .background(Color.LightGray)
                         .then(
                             if (fixedTop) {
                                 Modifier.horizontalScroll(horizontalScrollState)
@@ -104,22 +108,24 @@ fun Table(
                             }
                         )
                 ) {
-                    items.take(numberOfTopFixes).forEachIndexed { columnId, columnList ->
+                    items.take(fixedTopSize).forEachIndexed { columnId, columnList ->
                         Row {
-                            columnList.takeLast(columnList.size - numberOfStartFixes)
+                            columnList.takeLast(columnList.size - fixedStartSize)
                                 .forEachIndexed { rowId, item ->
                                     Box(
                                         modifier = Modifier
                                             .size(
-                                                width = tableItemSize.columnWidthSize[rowId + numberOfStartFixes],
+                                                width = tableItemSize.columnWidthSize[rowId + fixedStartSize],
                                                 height = tableItemSize.rowHeightSize[columnId],
                                             )
-                                            .drawBehind(onDraw = horizontalOnDraw),
+                                            .background(color = backgroundColor(columnId, rowId + fixedStartSize))
+                                            .drawBehind(onDraw = outlineOnDraw),
                                         contentAlignment = Alignment.TopStart,
                                     ) {
                                         Text(
                                             text = item,
-                                            style = style,
+                                            style = style(columnId, rowId + fixedStartSize),
+                                            color = textColor(columnId, rowId + fixedStartSize),
                                         )
                                     }
                                 }
@@ -131,7 +137,6 @@ fun Table(
             Row {
                 Column(
                     modifier = Modifier
-                        .background(Color.Yellow)
                         .then(
                             if (fixedStart) {
                                 Modifier.verticalScroll(verticalScrollState)
@@ -140,22 +145,24 @@ fun Table(
                             }
                         ),
                 ) {
-                    items.takeLast(items.size - numberOfTopFixes)
+                    items.takeLast(items.size - fixedTopSize)
                         .forEachIndexed { columnId, columnList ->
                             Row {
-                                columnList.take(numberOfStartFixes).forEachIndexed { rowId, item ->
+                                columnList.take(fixedStartSize).forEachIndexed { rowId, item ->
                                     Box(
                                         modifier = Modifier
                                             .size(
                                                 width = tableItemSize.columnWidthSize[rowId],
-                                                height = tableItemSize.rowHeightSize[columnId + numberOfTopFixes],
+                                                height = tableItemSize.rowHeightSize[columnId + fixedTopSize],
                                             )
-                                            .drawBehind(onDraw = horizontalOnDraw),
+                                            .background(color = backgroundColor(columnId + fixedTopSize, rowId))
+                                            .drawBehind(onDraw = outlineOnDraw),
                                         contentAlignment = Alignment.TopStart,
                                     ) {
                                         Text(
                                             text = item,
-                                            style = style,
+                                            style = style(columnId + fixedTopSize, rowId),
+                                            color = textColor(columnId + fixedTopSize, rowId),
                                         )
                                     }
                                 }
@@ -173,23 +180,25 @@ fun Table(
                         }
                     )
                 ) {
-                    items.takeLast(items.size - numberOfTopFixes)
+                    items.takeLast(items.size - fixedTopSize)
                         .forEachIndexed { columnId, columnList ->
                             Row {
-                                columnList.takeLast(items.first().size - numberOfStartFixes)
+                                columnList.takeLast(items.first().size - fixedStartSize)
                                     .forEachIndexed { rowId, item ->
                                         Box(
                                             modifier = Modifier
                                                 .size(
-                                                    width = tableItemSize.columnWidthSize[rowId + numberOfStartFixes],
-                                                    height = tableItemSize.rowHeightSize[columnId + numberOfTopFixes],
+                                                    width = tableItemSize.columnWidthSize[rowId + fixedStartSize],
+                                                    height = tableItemSize.rowHeightSize[columnId + fixedTopSize],
                                                 )
-                                                .drawBehind(onDraw = horizontalOnDraw),
+                                                .background(color = backgroundColor(columnId + fixedTopSize, rowId + fixedStartSize))
+                                                .drawBehind(onDraw = outlineOnDraw),
                                             contentAlignment = Alignment.TopStart,
                                         ) {
                                             Text(
                                                 text = item,
-                                                style = style,
+                                                style = style(columnId + fixedTopSize, rowId + fixedStartSize),
+                                                color = textColor(columnId + fixedTopSize, rowId + fixedStartSize),
                                             )
                                         }
                                     }
@@ -207,10 +216,10 @@ data class TableItemSize(
 )
 
 @Composable
-fun AutoSizeTextTable(
+private fun AutoSizeTextTable(
     modifier: Modifier = Modifier,
     items: List<List<String>>,
-    style: TextStyle,
+    style: (columnId: Int, rowIde: Int) -> TextStyle,
     content: @Composable (TableItemSize) -> Unit,
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
@@ -222,7 +231,7 @@ fun AutoSizeTextTable(
                 subcompose("${columnId}_${rowId}") {
                     Text(
                         text = items[columnId][rowId],
-                        style = style,
+                        style = style(columnId, rowId),
                     )
                 }.first().measure(Constraints())
             }
@@ -250,6 +259,7 @@ fun AutoSizeTextTable(
 @Preview
 @Composable
 fun PreviewTable() {
+    val style = LocalTextStyle.current
     Table(
         items = listOf(
             listOf("タイトル1", "タイトル2", "タイトル3", "タイトル4", "タイトル5", "タイトル6", "タイトル7", "タイトル8"),
@@ -270,9 +280,18 @@ fun PreviewTable() {
             listOf("タイトル16", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
             listOf("タイトル17", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
             listOf("タイトル18", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
-            listOf("タイトル19", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
-            listOf("タイトル20", "あああああああ\naaa\naaa\na", "あ", "BBB", "CCC", "C", "C", "C"),
+            listOf("タイトル19", "あああああああ\naaa\naaa\naaa\n1aaa", "あ", "BBB", "CCC", "C", "C", "C"),
+            listOf("タイトル20", "あああああああ\naaa\naaa\naaa\n1aaa", "あ", "BBB", "CCC", "C", "C", "C"),
         ),
-        style = LocalTextStyle.current,
+        style = { columnId, rowId ->
+            style.merge(
+                fontSize = 18.sp,
+                color = when {
+                    columnId == 0 -> Color.Red
+                    rowId == 0 -> Color.Blue
+                    else -> Color.Black
+                },
+            )
+        },
     )
 }
