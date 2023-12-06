@@ -62,7 +62,8 @@ fun Table(
         style = style,
     ) { tableItemSize ->
         Column(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .then(
                     if (fixedTop.not() && fixedStart.not()) {
                         Modifier
@@ -70,7 +71,7 @@ fun Table(
                             .verticalScroll(verticalScrollState)
                     } else {
                         Modifier
-                    }
+                    },
                 ),
         ) {
             Row {
@@ -79,7 +80,8 @@ fun Table(
                         Row {
                             columnList.take(fixedStartSize).forEachIndexed { rowId, item ->
                                 Box(
-                                    modifier = Modifier
+                                    modifier =
+                                    Modifier
                                         .size(
                                             width = tableItemSize.columnWidthSize[rowId],
                                             height = tableItemSize.rowHeightSize[columnId],
@@ -99,21 +101,23 @@ fun Table(
                     }
                 }
                 Column(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .then(
                             if (fixedTop) {
                                 Modifier.horizontalScroll(horizontalScrollState)
                             } else {
                                 Modifier
-                            }
-                        )
+                            },
+                        ),
                 ) {
                     items.take(fixedTopSize).forEachIndexed { columnId, columnList ->
                         Row {
                             columnList.takeLast(columnList.size - fixedStartSize)
                                 .forEachIndexed { rowId, item ->
                                     Box(
-                                        modifier = Modifier
+                                        modifier =
+                                        Modifier
                                             .size(
                                                 width = tableItemSize.columnWidthSize[rowId + fixedStartSize],
                                                 height = tableItemSize.rowHeightSize[columnId],
@@ -136,13 +140,14 @@ fun Table(
 
             Row {
                 Column(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .then(
                             if (fixedStart) {
                                 Modifier.verticalScroll(verticalScrollState)
                             } else {
                                 Modifier
-                            }
+                            },
                         ),
                 ) {
                     items.takeLast(items.size - fixedTopSize)
@@ -150,7 +155,8 @@ fun Table(
                             Row {
                                 columnList.take(fixedStartSize).forEachIndexed { rowId, item ->
                                     Box(
-                                        modifier = Modifier
+                                        modifier =
+                                        Modifier
                                             .size(
                                                 width = tableItemSize.columnWidthSize[rowId],
                                                 height = tableItemSize.rowHeightSize[columnId + fixedTopSize],
@@ -170,15 +176,16 @@ fun Table(
                         }
                 }
                 Column(
-                    modifier = Modifier.then(
+                    modifier =
+                    Modifier.then(
                         if (fixedTop || fixedStart) {
                             Modifier
                                 .verticalScroll(verticalScrollState)
                                 .horizontalScroll(horizontalScrollState)
                         } else {
                             Modifier
-                        }
-                    )
+                        },
+                    ),
                 ) {
                     items.takeLast(items.size - fixedTopSize)
                         .forEachIndexed { columnId, columnList ->
@@ -186,7 +193,8 @@ fun Table(
                                 columnList.takeLast(items.first().size - fixedStartSize)
                                     .forEachIndexed { rowId, item ->
                                         Box(
-                                            modifier = Modifier
+                                            modifier =
+                                            Modifier
                                                 .size(
                                                     width = tableItemSize.columnWidthSize[rowId + fixedStartSize],
                                                     height = tableItemSize.rowHeightSize[columnId + fixedTopSize],
@@ -226,16 +234,17 @@ private fun AutoSizeTextTable(
         val heightSize = MutableList(items.size) { 0.dp }
         val widthSize = MutableList(items.first().size) { 0.dp }
 
-        val itemsMeasurable = items.mapIndexed { columnId, columnList ->
-            List(columnList.size) { rowId ->
-                subcompose("${columnId}_${rowId}") {
-                    Text(
-                        text = items[columnId][rowId],
-                        style = style(columnId, rowId),
-                    )
-                }.first().measure(Constraints())
+        val itemsMeasurable =
+            items.mapIndexed { columnId, columnList ->
+                List(columnList.size) { rowId ->
+                    subcompose("${columnId}_$rowId") {
+                        Text(
+                            text = items[columnId][rowId],
+                            style = style(columnId, rowId),
+                        )
+                    }.first().measure(Constraints())
+                }
             }
-        }
         items.forEachIndexed { columnId, columnList ->
             columnList.forEachIndexed { rowId, _ ->
                 val item = itemsMeasurable[columnId][rowId]
@@ -246,9 +255,10 @@ private fun AutoSizeTextTable(
             }
         }
 
-        val contentPlaceable = subcompose("content") {
-            content(TableItemSize(widthSize, heightSize))
-        }[0].measure(constraints)
+        val contentPlaceable =
+            subcompose("content") {
+                content(TableItemSize(widthSize, heightSize))
+            }[0].measure(constraints)
 
         layout(contentPlaceable.width, contentPlaceable.height) {
             contentPlaceable.place(0, 0)
@@ -261,7 +271,8 @@ private fun AutoSizeTextTable(
 fun PreviewTable() {
     val style = LocalTextStyle.current
     Table(
-        items = listOf(
+        items =
+        listOf(
             listOf("タイトル1", "タイトル2", "タイトル3", "タイトル4", "タイトル5", "タイトル6", "タイトル7", "タイトル8"),
             listOf("タイトル2", "111\n11\n1", "あああ", "BBB", "CCC", "C", "C", "C"),
             listOf("タイトル3", "111", "あああ", "BBB", "CCC", "C", "C", "C"),
@@ -286,7 +297,8 @@ fun PreviewTable() {
         style = { columnId, rowId ->
             style.merge(
                 fontSize = 18.sp,
-                color = when {
+                color =
+                when {
                     columnId == 0 -> Color.Red
                     rowId == 0 -> Color.Blue
                     else -> Color.Black
