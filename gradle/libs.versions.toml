@@ -5,6 +5,7 @@ androidxCompose = "1.6.0-beta02"
 androidxComposeMaterial3 = "1.2.0-alpha12"
 junit4 = "4.13.2"
 kotlin = "1.9.20"
+ktlint = "1.0.1"
 
 # I'm using it, so no deletions allowed
 androidxComposeCompiler = "1.5.4"
@@ -16,6 +17,9 @@ androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref 
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "androidxCompose" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "androidxCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit4" }
+
+# Ktlint
+ktlint = { group = "com.pinterest.ktlint", name = "ktlint-cli", version.ref = "ktlint" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

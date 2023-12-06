@@ -28,22 +28,23 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val colorScheme = MaterialTheme.colorScheme
-            val type = listOf(
-                0 to 0,
-                0 to 1,
-                1 to 0,
-                1 to 1,
-                1 to 2,
-                2 to 2,
-            )
+            val type =
+                listOf(
+                    0 to 0,
+                    0 to 1,
+                    1 to 0,
+                    1 to 1,
+                    1 to 2,
+                    2 to 2,
+                )
             var typeIndex by remember { mutableIntStateOf(0) }
             AutoSizeTextTableTheme(
                 darkTheme = false,
             ) {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    color = MaterialTheme.colorScheme.background
-                ) {// scrollStateを各列に設定していてスクロールした時の挙動が少しおかしくなるため、スクロール末尾のバネを無くしている
+                    color = MaterialTheme.colorScheme.background,
+                ) { // scrollStateを各列に設定していてスクロールした時の挙動が少しおかしくなるため、スクロール末尾のバネを無くしている
                     CompositionLocalProvider(
                         LocalOverscrollConfiguration provides null,
                     ) {
@@ -51,13 +52,14 @@ class MainActivity : ComponentActivity() {
                             Button(
                                 onClick = {
                                     typeIndex = (typeIndex + 1) % type.size
-                                }
+                                },
                             ) {
                                 Text("切替")
                             }
                             Table(
                                 modifier = Modifier.padding(all = 8.dp),
-                                items = listOf(
+                                items =
+                                listOf(
                                     listOf("タイトル1", "タイトル2", "タイトル3", "タイトル4", "タイトル5", "タイトル6", "タイトル7", "タイトル8"),
                                     listOf("タイトル2", "111\n11\n1", "あああ", "BBB", "CCC", "C", "C", "C"),
                                     listOf("タイトル3", "111", "あああ", "BBB", "CCC", "C", "C", "C"),
