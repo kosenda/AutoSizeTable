@@ -5,6 +5,8 @@ jobs:
     docker:
       - image: cimg/android:2023.11
     steps:
+      - checkout
+
       - restore_cache:
           key: jars-{{ checksum "build.gradle.kts" }}-{{ checksum  "app/build.gradle.kts" }}
 
