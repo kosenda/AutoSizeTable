@@ -1,0 +1,42 @@
+version: 2.1
+
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/android:2023.11
+    steps:
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle.kts" }}-{{ checksum  "app/build.gradle.kts" }}
+
+      - run: ./gradlew androidDependencies
+
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle.kts" }}-{{ checksum  "app/build.gradle.kts" }}
+
+      - run:
+          command: sudo gem install bundler:2.4.12
+
+      - run:
+          command: bundle install --path vendor/bundle
+
+      - run:
+          name: ktlint-check
+          command: ./gradlew --continue ktlintCheck
+
+      - run:
+          name: test
+          command: ./gradlew testDebug --stacktrace
+
+      - run:
+          name: run-danger-file
+          command: bundle exec danger --verbose
+
+workflows:
+  test:
+    jobs:
+      - build-and-test
+
+# ■ memo ■
+# check command: `circleci config validate`
