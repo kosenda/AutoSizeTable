@@ -37,3 +37,6 @@ dependencies {
   implementation 'com.github.kosenda:AutoSizeTable:<version>
 }
 ```
+
+## License
+https://github.com/kosenda/AutoSizeTable/blob/09bc5fa896db3f5e5861321d71768c3bcd3e8d69/LICENSE#L1-L21
