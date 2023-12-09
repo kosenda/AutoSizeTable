@@ -130,10 +130,7 @@ fun AutoSizeTable(
                                                 height = tableItemSize.rowHeightSize[columnId],
                                             )
                                             .background(
-                                                color = backgroundColor(
-                                                    columnId,
-                                                    rowId + fixedStartSize,
-                                                ),
+                                                color = backgroundColor(columnId, rowId + fixedStartSize),
                                             )
                                             .drawBehind(onDraw = outlineOnDraw),
                                         contentAlignment = contentAlignment(columnId, rowId + fixedStartSize),
@@ -244,8 +241,8 @@ private fun MeasureTable(
     content: @Composable (TableItemSize) -> Unit,
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
-        val heightSize = MutableList(items.size) { 0.dp }
-        val widthSize = MutableList(items.first().size) { 0.dp }
+        val heightSizes = MutableList(items.size) { 0.dp }
+        val widthSizes = MutableList(items.first().size) { 0.dp }
 
         val itemsMeasurable = items.mapIndexed { columnId, columnList ->
             List(columnList.size) { rowId ->
@@ -260,13 +257,13 @@ private fun MeasureTable(
                 val item = itemsMeasurable[columnId][rowId]
                 val width = item.width.toDp()
                 val height = item.height.toDp()
-                widthSize[rowId] = maxOf(widthSize[rowId], width)
-                heightSize[columnId] = maxOf(heightSize[columnId], height)
+                widthSizes[rowId] = maxOf(widthSizes[rowId], width)
+                heightSizes[columnId] = maxOf(heightSizes[columnId], height)
             }
         }
 
         val contentPlaceable = subcompose("content") {
-            content(TableItemSize(widthSize, heightSize))
+            content(TableItemSize(widthSizes, heightSizes))
         }.first().measure(constraints)
 
         layout(contentPlaceable.width, contentPlaceable.height) {
