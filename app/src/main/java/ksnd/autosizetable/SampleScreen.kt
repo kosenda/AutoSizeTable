@@ -85,9 +85,11 @@ fun SampleScreen() {
                         columnId in 0..<type[typeIndex].first -> {
                             colorScheme.primaryContainer
                         }
+
                         rowId in 0..<type[typeIndex].second -> {
                             colorScheme.tertiaryContainer
                         }
+
                         columnId % 2 == 0 -> colorScheme.surface
                         else -> colorScheme.inverseOnSurface
                     }
