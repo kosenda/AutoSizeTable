@@ -1,4 +1,4 @@
-package ksnd.autosizetexttable.ui.theme
+package ksnd.autosizetable.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -39,7 +39,7 @@ private val LightColorScheme =
     )
 
 @Composable
-fun AutoSizeTextTableTheme(
+fun AutoSizeTableTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

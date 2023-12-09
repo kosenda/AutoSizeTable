@@ -1,4 +1,4 @@
-package ksnd.autosizetexttable
+package ksnd.autosizetable
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ksnd.autosizetexttable.ui.theme.AutoSizeTextTableTheme
+import ksnd.autosizetable.ui.theme.AutoSizeTableTheme
 
 @Composable
 fun SampleScreen() {
@@ -103,7 +103,7 @@ fun SampleScreen() {
 @Preview
 @Composable
 fun PreviewSampleScreen() {
-    AutoSizeTextTableTheme {
+    AutoSizeTableTheme {
         SampleScreen()
     }
 }

@@ -1,15 +1,15 @@
-package ksnd.autosizetexttable
+package ksnd.autosizetable
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import ksnd.autosizetexttable.ui.theme.AutoSizeTextTableTheme
+import ksnd.autosizetable.ui.theme.AutoSizeTableTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AutoSizeTextTableTheme(
+            AutoSizeTableTheme(
                 darkTheme = false,
             ) {
                 SampleScreen()

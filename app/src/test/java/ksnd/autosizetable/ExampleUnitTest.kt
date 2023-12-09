@@ -1,4 +1,4 @@
-package ksnd.autosizetexttable
+package ksnd.autosizetable
 
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
