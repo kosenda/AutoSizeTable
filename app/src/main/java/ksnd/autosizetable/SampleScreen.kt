@@ -88,8 +88,8 @@ fun SampleScreen() {
                 content = List(NUM_OF_ITEMS_IN_EACH_COLUMN) { columnId ->
                     List(NUM_OF_ITEMS_IN_EACH_ROW) { rowId ->
                         {
-                            when (rowId) {
-                                0 -> Column {
+                            if (rowId == 0 && columnId % 2 == 0) {
+                                Column {
                                     repeat(numMailColumnIcons) {
                                         Row {
                                             repeat(numMailRowIcons) {
@@ -104,8 +104,8 @@ fun SampleScreen() {
                                         }
                                     }
                                 }
-
-                                else -> Text(
+                            } else {
+                                Text(
                                     text = "rowId: $rowId \ncolumnId: $columnId",
                                     modifier = Modifier.padding(8.dp),
                                     fontWeight = if (columnId < type[typeIndex].first) {
