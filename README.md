@@ -20,7 +20,8 @@ dependencyResolutionManagement {
 }
 ```
 
-### Step 2. Add the dependency
+### Step 2. Add the dependency 
+See [release page](https://github.com/kosenda/AutoSizeTable/releases) for `<version>`
 ```
 dependencies {
   implementation 'com.github.kosenda:AutoSizeTable:<version>
