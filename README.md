@@ -1,6 +1,6 @@
 [![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=svg)](https://github.com/kosenda/AutoSizeTextTable)　[![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen.svg?style=flat)](https://renovatebot.com)　
 
-# AutoSizeTextTable
+# AutoSizeTable
 
 
 # 🏗️🏗️🏗️　作成中...　🏗️🏗️🏗️
