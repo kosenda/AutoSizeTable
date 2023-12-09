@@ -11,7 +11,7 @@ This library can be used with Jetpack Compose to easily create tables that will 
 
 
 
-# How to setup
+## How to setup
 
 ### Step 1. Add the JitPack repository to your build file
 Add it in your root build.gradle at the end of repositories:
