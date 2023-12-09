@@ -3,14 +3,13 @@ activity = "1.8.1"
 androidGradlePlugin = "8.2.0"
 androidxCompose = "1.6.0-beta02"
 androidxComposeMaterial3 = "1.2.0-alpha12"
-autoSizeTable = "0.0.1"
 junit4 = "4.13.2"
 kotlin = "1.9.20"
 ktlint = "1.0.1"
-secrets = "2.0.1"
 
 # I'm using it, so no deletions allowed
 androidxComposeCompiler = "1.5.4"
+autoSizeTable = "0.0.1"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
