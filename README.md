@@ -9,11 +9,9 @@ This library can be used with Jetpack Compose to easily create tables that will 
 > **Poor performance**
 
 ## Sample
-https://github.com/kosenda/AutoSizeTable/blob/1e2abb125e2acb68f322180c1e11236631741c11/app/src/main/java/ksnd/autosizetable/SampleScreen.kt#L25-L103
-
-
 https://github.com/kosenda/AutoSizeTable/assets/60963155/27d4c51d-826d-4123-af6c-e091639a07bb
 
+https://github.com/kosenda/AutoSizeTable/blob/1e2abb125e2acb68f322180c1e11236631741c11/app/src/main/java/ksnd/autosizetable/SampleScreen.kt#L25-L103
 
 
 ## How to setup
