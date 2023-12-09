@@ -8,13 +8,13 @@ This library can be used with Jetpack Compose to easily create tables that will 
 > [!WARNING]
 > **Poor performance**
 
-## Sample
+## ▪ Sample
 https://github.com/kosenda/AutoSizeTable/assets/60963155/27d4c51d-826d-4123-af6c-e091639a07bb
 
 https://github.com/kosenda/AutoSizeTable/blob/1e2abb125e2acb68f322180c1e11236631741c11/app/src/main/java/ksnd/autosizetable/SampleScreen.kt#L25-L103
 
 
-## How to setup
+## ▪ How to setup
 
 ### Step 1. Add the JitPack repository to your build file
 Add it in your root build.gradle at the end of repositories:
@@ -36,5 +36,5 @@ dependencies {
 }
 ```
 
-## License
+## ▪ License
 https://github.com/kosenda/AutoSizeTable/blob/09bc5fa896db3f5e5861321d71768c3bcd3e8d69/LICENSE#L1-L21
