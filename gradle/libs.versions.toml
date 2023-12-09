@@ -9,6 +9,7 @@ ktlint = "1.0.1"
 
 # I'm using it, so no deletions allowed
 androidxComposeCompiler = "1.5.4"
+autoSizeTable = "0.0.1"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
