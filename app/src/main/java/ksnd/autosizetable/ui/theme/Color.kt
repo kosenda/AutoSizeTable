@@ -1,4 +1,4 @@
-package ksnd.autosizetexttable.ui.theme
+package ksnd.autosizetable.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

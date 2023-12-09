@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "ksnd.autosizetexttable"
+    namespace = "ksnd.autosizetable"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "ksnd.autosizetexttable"
+        applicationId = "ksnd.autosizetable"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

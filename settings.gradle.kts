@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AutoSizeTextTable"
+rootProject.name = "AutoSizeTable"
 include(":app")
  

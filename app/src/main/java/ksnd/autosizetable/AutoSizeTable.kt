@@ -1,4 +1,4 @@
-package ksnd.autosizetexttable
+package ksnd.autosizetable
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
