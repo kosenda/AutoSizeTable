@@ -29,6 +29,20 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+/**
+ * Display the table with the size of each item automatically adjusted.
+ *
+ * @param modifier Modifier for table
+ * @param fixedTopSize Number of rows to be fixed at the top
+ * @param fixedStartSize Number of columns to be fixed at the start
+ * @param strokeWidth Width of the outline stroke in pixels
+ * @param outlineColor Color of the outline
+ * @param horizontalScrollState ScrollState for horizontal scroll
+ * @param verticalScrollState ScrollState for vertical scroll
+ * @param backgroundColor Background color of each item
+ * @param contentAlignment Alignment of each item
+ * @param content Items to display in the table
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AutoSizeTable(
@@ -43,8 +57,8 @@ fun AutoSizeTable(
     contentAlignment: (columnId: Int, rowId: Int) -> Alignment = { _, _ -> Alignment.TopStart },
     content: List<List<@Composable () -> Unit>>,
 ) {
-    val fixedTop by remember(fixedTopSize) { derivedStateOf { fixedTopSize > 0 } }
-    val fixedStart by remember(fixedStartSize) { derivedStateOf { fixedStartSize > 0 } }
+    val isFixedTop by remember(fixedTopSize) { derivedStateOf { fixedTopSize > 0 } }
+    val isFixedStart by remember(fixedStartSize) { derivedStateOf { fixedStartSize > 0 } }
 
     val outlineOnDraw: DrawScope.() -> Unit = {
         drawRect(
@@ -55,7 +69,8 @@ fun AutoSizeTable(
         )
     }
 
-    // scrollStateを各列に設定していてスクロールした時の挙動が少しおかしくなるため、スクロール末尾のバネを無くしている
+    // OverScroll behavior is a bit strange due to set scrollState for each column and each row.
+    // Therefore, the OverScroll effect is disabled.
     CompositionLocalProvider(
         LocalOverscrollConfiguration provides null,
     ) {
@@ -64,18 +79,18 @@ fun AutoSizeTable(
             items = content,
         ) { tableItemSize ->
             Column(
-                modifier = Modifier
-                    .then(
-                        if (fixedTop.not() && fixedStart.not()) {
-                            Modifier
-                                .horizontalScroll(horizontalScrollState)
-                                .verticalScroll(verticalScrollState)
-                        } else {
-                            Modifier
-                        },
-                    ),
+                modifier = if (isFixedTop.not() && isFixedStart.not()) {
+                    Modifier
+                        .horizontalScroll(horizontalScrollState)
+                        .verticalScroll(verticalScrollState)
+                } else {
+                    Modifier
+                },
             ) {
+                // Fixed top part
                 Row {
+
+                    // Fixed top and left part
                     Column {
                         content.take(fixedTopSize).forEachIndexed { columnId, columnList ->
                             Row {
@@ -96,15 +111,14 @@ fun AutoSizeTable(
                             }
                         }
                     }
+
+                    // Fixed top part
                     Column(
-                        modifier = Modifier
-                            .then(
-                                if (fixedTop) {
-                                    Modifier.horizontalScroll(horizontalScrollState)
-                                } else {
-                                    Modifier
-                                },
-                            ),
+                        modifier = if (isFixedTop) {
+                            Modifier.horizontalScroll(horizontalScrollState)
+                        } else {
+                            Modifier
+                        },
                     ) {
                         content.take(fixedTopSize).forEachIndexed { columnId, columnList ->
                             Row {
@@ -116,10 +130,7 @@ fun AutoSizeTable(
                                                 height = tableItemSize.rowHeightSize[columnId],
                                             )
                                             .background(
-                                                color = backgroundColor(
-                                                    columnId,
-                                                    rowId + fixedStartSize,
-                                                ),
+                                                color = backgroundColor(columnId, rowId + fixedStartSize),
                                             )
                                             .drawBehind(onDraw = outlineOnDraw),
                                         contentAlignment = contentAlignment(columnId, rowId + fixedStartSize),
@@ -132,16 +143,16 @@ fun AutoSizeTable(
                     }
                 }
 
+                // Unfixed top part
                 Row {
+
+                    // Fixed left part
                     Column(
-                        modifier = Modifier
-                            .then(
-                                if (fixedStart) {
-                                    Modifier.verticalScroll(verticalScrollState)
-                                } else {
-                                    Modifier
-                                },
-                            ),
+                        modifier = if (isFixedStart) {
+                            Modifier.verticalScroll(verticalScrollState)
+                        } else {
+                            Modifier
+                        },
                     ) {
                         content.takeLast(content.size - fixedTopSize)
                             .forEachIndexed { columnId, columnList ->
@@ -155,10 +166,7 @@ fun AutoSizeTable(
                                                     height = tableItemSize.rowHeightSize[columnId + fixedTopSize],
                                                 )
                                                 .background(
-                                                    color = backgroundColor(
-                                                        columnId + fixedTopSize,
-                                                        rowId,
-                                                    ),
+                                                    color = backgroundColor(columnId + fixedTopSize, rowId),
                                                 )
                                                 .drawBehind(onDraw = outlineOnDraw),
                                             contentAlignment = contentAlignment(columnId + fixedTopSize, rowId),
@@ -169,17 +177,16 @@ fun AutoSizeTable(
                                 }
                             }
                     }
+
+                    // Unfixed part
                     Column(
-                        modifier =
-                        Modifier.then(
-                            if (fixedTop || fixedStart) {
-                                Modifier
-                                    .verticalScroll(verticalScrollState)
-                                    .horizontalScroll(horizontalScrollState)
-                            } else {
-                                Modifier
-                            },
-                        ),
+                        modifier = if (isFixedTop || isFixedStart) {
+                            Modifier
+                                .verticalScroll(verticalScrollState)
+                                .horizontalScroll(horizontalScrollState)
+                        } else {
+                            Modifier
+                        },
                     ) {
                         content.takeLast(content.size - fixedTopSize).forEachIndexed { columnId, columnList ->
                             Row {
@@ -197,10 +204,7 @@ fun AutoSizeTable(
                                                 ),
                                             )
                                             .drawBehind(onDraw = outlineOnDraw),
-                                        contentAlignment = contentAlignment(
-                                            columnId + fixedTopSize,
-                                            rowId + fixedStartSize,
-                                        ),
+                                        contentAlignment = contentAlignment(columnId + fixedTopSize, rowId + fixedStartSize),
                                     ) {
                                         item()
                                     }
@@ -214,11 +218,22 @@ fun AutoSizeTable(
     }
 }
 
+/**
+ * @param columnWidthSize Width of each column
+ * @param rowHeightSize Height of each row
+ */
 private data class TableItemSize(
     val columnWidthSize: List<Dp>,
     val rowHeightSize: List<Dp>,
 )
 
+/**
+ * Measure the size of each item in the table and display it.
+ *
+ * @param modifier Modifier for table
+ * @param items List of items to be displayed in the table
+ * @param content Content to be displayed in the table
+ */
 @Composable
 private fun MeasureTable(
     modifier: Modifier = Modifier,
@@ -226,8 +241,8 @@ private fun MeasureTable(
     content: @Composable (TableItemSize) -> Unit,
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
-        val heightSize = MutableList(items.size) { 0.dp }
-        val widthSize = MutableList(items.first().size) { 0.dp }
+        val heightSizes = MutableList(items.size) { 0.dp }
+        val widthSizes = MutableList(items.first().size) { 0.dp }
 
         val itemsMeasurable = items.mapIndexed { columnId, columnList ->
             List(columnList.size) { rowId ->
@@ -242,13 +257,13 @@ private fun MeasureTable(
                 val item = itemsMeasurable[columnId][rowId]
                 val width = item.width.toDp()
                 val height = item.height.toDp()
-                widthSize[rowId] = maxOf(widthSize[rowId], width)
-                heightSize[columnId] = maxOf(heightSize[columnId], height)
+                widthSizes[rowId] = maxOf(widthSizes[rowId], width)
+                heightSizes[columnId] = maxOf(heightSizes[columnId], height)
             }
         }
 
         val contentPlaceable = subcompose("content") {
-            content(TableItemSize(widthSize, heightSize))
+            content(TableItemSize(widthSizes, heightSizes))
         }.first().measure(constraints)
 
         layout(contentPlaceable.width, contentPlaceable.height) {

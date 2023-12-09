@@ -27,7 +27,7 @@ fun SampleScreen() {
     val colorScheme = MaterialTheme.colorScheme
     var typeIndex by remember { mutableIntStateOf(0) }
 
-    // columnFixNum to rowFixNum
+    // fixedTopSize to fixedStartSize
     val type = listOf(
         1 to 1,
         1 to 0,
