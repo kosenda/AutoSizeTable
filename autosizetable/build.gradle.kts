@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    id("maven-publish")
 }
 
 android {
@@ -25,8 +26,28 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
     implementation(libs.androidx.compose.foundation)
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "ksnd.autosizetable"
+            artifactId = "autosizetable"
+            version = libs.versions.autoSizeTable.get()
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
 }
