@@ -108,9 +108,9 @@ fun AutoSizeTable(
                 }
 
                 // Fixed top part
-                // OverScroll behavior is a bit strange due to set scrollState for each column and each row.
-                // Therefore, the OverScroll effect is disabled.
                 CompositionLocalProvider(
+                    // Disable horizontal OverScrollEffect
+                    // because it cannot be common OverScrollEffect and results in strange behavior.
                     LocalOverscrollConfiguration provides null,
                 ) {
                     Column(
