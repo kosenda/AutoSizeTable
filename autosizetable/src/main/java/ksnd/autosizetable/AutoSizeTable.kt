@@ -69,50 +69,50 @@ fun AutoSizeTable(
         )
     }
 
-    // OverScroll behavior is a bit strange due to set scrollState for each column and each row.
-    // Therefore, the OverScroll effect is disabled.
-    CompositionLocalProvider(
-        LocalOverscrollConfiguration provides null,
-    ) {
-        MeasureTable(
-            modifier = modifier,
-            items = content,
-        ) { tableItemSize ->
-            Column(
-                modifier = if (isFixedTop.not() && isFixedStart.not()) {
-                    Modifier
-                        .horizontalScroll(horizontalScrollState)
-                        .verticalScroll(verticalScrollState)
-                } else {
-                    Modifier
-                },
-            ) {
-                // Fixed top part
-                Row {
+    MeasureTable(
+        modifier = modifier,
+        items = content,
+    ) { tableItemSize ->
+        Column(
+            modifier = if (isFixedTop.not() && isFixedStart.not()) {
+                Modifier
+                    .horizontalScroll(horizontalScrollState)
+                    .verticalScroll(verticalScrollState)
+            } else {
+                Modifier
+            },
+        ) {
+            // Fixed top part
+            Row {
 
-                    // Fixed top and left part
-                    Column {
-                        content.take(fixedTopSize).forEachIndexed { columnId, columnList ->
-                            Row {
-                                columnList.take(fixedStartSize).forEachIndexed { rowId, item ->
-                                    Box(
-                                        modifier = Modifier
-                                            .size(
-                                                width = tableItemSize.columnWidthSize[rowId],
-                                                height = tableItemSize.rowHeightSize[columnId],
-                                            )
-                                            .background(color = backgroundColor(columnId, rowId))
-                                            .drawBehind(onDraw = outlineOnDraw),
-                                        contentAlignment = contentAlignment(columnId, rowId),
-                                    ) {
-                                        item()
-                                    }
+                // Fixed top and left part
+                Column {
+                    content.take(fixedTopSize).forEachIndexed { columnId, columnList ->
+                        Row {
+                            columnList.take(fixedStartSize).forEachIndexed { rowId, item ->
+                                Box(
+                                    modifier = Modifier
+                                        .size(
+                                            width = tableItemSize.columnWidthSize[rowId],
+                                            height = tableItemSize.rowHeightSize[columnId],
+                                        )
+                                        .background(color = backgroundColor(columnId, rowId))
+                                        .drawBehind(onDraw = outlineOnDraw),
+                                    contentAlignment = contentAlignment(columnId, rowId),
+                                ) {
+                                    item()
                                 }
                             }
                         }
                     }
+                }
 
-                    // Fixed top part
+                // Fixed top part
+                CompositionLocalProvider(
+                    // Disable horizontal OverScrollEffect
+                    // because it cannot be common OverScrollEffect and results in strange behavior.
+                    LocalOverscrollConfiguration provides null,
+                ) {
                     Column(
                         modifier = if (isFixedTop) {
                             Modifier.horizontalScroll(horizontalScrollState)
@@ -142,47 +142,52 @@ fun AutoSizeTable(
                         }
                     }
                 }
+            }
 
-                // Unfixed top part
-                Row {
+            // Unfixed top part
+            Row(
+                modifier = if (isFixedStart.not() && isFixedTop.not()) {
+                    Modifier
+                } else {
+                    Modifier.verticalScroll(verticalScrollState)
+                },
+            ) {
 
-                    // Fixed left part
-                    Column(
-                        modifier = if (isFixedStart) {
-                            Modifier.verticalScroll(verticalScrollState)
-                        } else {
-                            Modifier
-                        },
-                    ) {
-                        content.takeLast(content.size - fixedTopSize)
-                            .forEachIndexed { columnId, columnList ->
-                                Row {
-                                    columnList.take(fixedStartSize).forEachIndexed { rowId, item ->
-                                        Box(
-                                            modifier =
-                                            Modifier
-                                                .size(
-                                                    width = tableItemSize.columnWidthSize[rowId],
-                                                    height = tableItemSize.rowHeightSize[columnId + fixedTopSize],
-                                                )
-                                                .background(
-                                                    color = backgroundColor(columnId + fixedTopSize, rowId),
-                                                )
-                                                .drawBehind(onDraw = outlineOnDraw),
-                                            contentAlignment = contentAlignment(columnId + fixedTopSize, rowId),
-                                        ) {
-                                            item()
-                                        }
+                // Fixed left part
+                Column {
+                    content.takeLast(content.size - fixedTopSize)
+                        .forEachIndexed { columnId, columnList ->
+                            Row {
+                                columnList.take(fixedStartSize).forEachIndexed { rowId, item ->
+                                    Box(
+                                        modifier =
+                                        Modifier
+                                            .size(
+                                                width = tableItemSize.columnWidthSize[rowId],
+                                                height = tableItemSize.rowHeightSize[columnId + fixedTopSize],
+                                            )
+                                            .background(
+                                                color = backgroundColor(columnId + fixedTopSize, rowId),
+                                            )
+                                            .drawBehind(onDraw = outlineOnDraw),
+                                        contentAlignment = contentAlignment(columnId + fixedTopSize, rowId),
+                                    ) {
+                                        item()
                                     }
                                 }
                             }
-                    }
+                        }
+                }
 
-                    // Unfixed part
+                // Unfixed part
+                CompositionLocalProvider(
+                    // Disable horizontal OverScrollEffect
+                    // because it cannot be common OverScrollEffect and results in strange behavior.
+                    LocalOverscrollConfiguration provides null,
+                ) {
                     Column(
                         modifier = if (isFixedTop || isFixedStart) {
                             Modifier
-                                .verticalScroll(verticalScrollState)
                                 .horizontalScroll(horizontalScrollState)
                         } else {
                             Modifier
