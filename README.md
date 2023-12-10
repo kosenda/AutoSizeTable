@@ -23,7 +23,7 @@ dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
   repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven { url = uri("https://jitpack.io") }
   }
 }
 ```
@@ -32,6 +32,6 @@ dependencyResolutionManagement {
 See [release page](https://github.com/kosenda/AutoSizeTable/releases) for `<version>`
 ```
 dependencies {
-  implementation 'com.github.kosenda:AutoSizeTable:<version>
+  implementation("com.github.kosenda:AutoSizeTable:<version>")
 }
 ```
