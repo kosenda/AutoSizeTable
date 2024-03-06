@@ -2,7 +2,7 @@
 activity = "1.8.1"
 androidGradlePlugin = "8.2.2"
 androidxCompose = "1.6.0-beta02"
-androidxComposeMaterial3 = "1.2.0-alpha12"
+androidxComposeMaterial3 = "1.2.1"
 junit4 = "4.13.2"
 kotlin = "1.9.20"
 ktlint = "1.1.1"
