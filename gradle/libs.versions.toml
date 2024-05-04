@@ -8,7 +8,7 @@ kotlin = "1.9.23"
 ktlint = "1.2.1"
 
 # I'm using it, so no deletions allowed
-androidxComposeCompiler = "1.5.4"
+androidxComposeCompiler = "1.5.13"
 autoSizeTable = "0.0.2"
 
 [libraries]
