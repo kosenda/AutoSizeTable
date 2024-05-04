@@ -4,7 +4,7 @@ androidGradlePlugin = "8.4.0"
 androidxCompose = "1.6.7"
 androidxComposeMaterial3 = "1.2.1"
 junit4 = "4.13.2"
-kotlin = "1.9.20"
+kotlin = "1.9.23"
 ktlint = "1.2.1"
 
 # I'm using it, so no deletions allowed
