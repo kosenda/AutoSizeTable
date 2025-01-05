@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build-and-test:
     docker:
-      - image: cimg/android:2024.04
+      - image: cimg/android:2024.11
     steps:
       - checkout
 
