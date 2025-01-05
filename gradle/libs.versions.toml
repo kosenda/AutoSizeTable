@@ -1,6 +1,6 @@
 [versions]
 activity = "1.9.0"
-androidGradlePlugin = "8.4.0"
+androidGradlePlugin = "8.7.3"
 androidxCompose = "1.6.7"
 androidxComposeMaterial3 = "1.2.1"
 junit4 = "4.13.2"
