@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
  * @param modifier Modifier for table
  * @param fixedTopSize Number of rows to be fixed at the top
  * @param fixedStartSize Number of columns to be fixed at the start
- * @param strokeWidth Width of the outline stroke in pixels
+ * @param outlineStroke outline stroke
  * @param outlineColor Color of the outline
  * @param horizontalScrollState ScrollState for horizontal scroll
  * @param verticalScrollState ScrollState for vertical scroll
@@ -49,7 +49,7 @@ fun AutoSizeTable(
     modifier: Modifier = Modifier,
     fixedTopSize: Int = 1,
     fixedStartSize: Int = 1,
-    strokeWidth: Float = 5.0f,
+    outlineStroke: Stroke = Stroke(width = 5.0f),
     outlineColor: Color = Color.Black,
     horizontalScrollState: ScrollState = rememberScrollState(),
     verticalScrollState: ScrollState = rememberScrollState(),
@@ -65,7 +65,7 @@ fun AutoSizeTable(
             color = outlineColor,
             topLeft = Offset(0f, 0f),
             size = Size(width = size.width, height = size.height),
-            style = Stroke(width = strokeWidth),
+            style = outlineStroke,
         )
     }
 
