@@ -53,8 +53,8 @@ fun AutoSizeTable(
     outlineColor: Color = Color.Black,
     horizontalScrollState: ScrollState = rememberScrollState(),
     verticalScrollState: ScrollState = rememberScrollState(),
-    backgroundColor: (columnId: Int, rowId: Int) -> Color = { _, _ -> Color.Unspecified },
-    contentAlignment: (columnId: Int, rowId: Int) -> Alignment = { _, _ -> Alignment.TopStart },
+    backgroundColor: (rowIndex: Int, columnIndex: Int) -> Color = { _, _ -> Color.Unspecified },
+    contentAlignment: (rowIndex: Int, columnIndex: Int) -> Alignment = { _, _ -> Alignment.TopStart },
     content: List<List<@Composable () -> Unit>>,
 ) {
     val isFixedTop by remember(fixedTopSize) { derivedStateOf { fixedTopSize > 0 } }
@@ -87,18 +87,18 @@ fun AutoSizeTable(
 
                 // Fixed top and left part
                 Column {
-                    content.take(fixedTopSize).forEachIndexed { columnId, columnList ->
+                    content.take(fixedTopSize).forEachIndexed { rowIndex, rowList ->
                         Row {
-                            columnList.take(fixedStartSize).forEachIndexed { rowId, item ->
+                            rowList.take(fixedStartSize).forEachIndexed { columnIndex, item ->
                                 Box(
                                     modifier = Modifier
                                         .size(
-                                            width = tableItemSize.columnWidthSize[rowId],
-                                            height = tableItemSize.rowHeightSize[columnId],
+                                            width = tableItemSize.columnWidthSize[columnIndex],
+                                            height = tableItemSize.rowHeightSize[rowIndex],
                                         )
-                                        .background(color = backgroundColor(columnId, rowId))
+                                        .background(color = backgroundColor(rowIndex, columnIndex))
                                         .drawBehind(onDraw = outlineOnDraw),
-                                    contentAlignment = contentAlignment(columnId, rowId),
+                                    contentAlignment = contentAlignment(rowIndex, columnIndex),
                                 ) {
                                     item()
                                 }
@@ -120,20 +120,20 @@ fun AutoSizeTable(
                             Modifier
                         },
                     ) {
-                        content.take(fixedTopSize).forEachIndexed { columnId, columnList ->
+                        content.take(fixedTopSize).forEachIndexed { rowIndex, rowList ->
                             Row {
-                                columnList.takeLast(columnList.size - fixedStartSize).forEachIndexed { rowId, item ->
+                                rowList.takeLast(rowList.size - fixedStartSize).forEachIndexed { columnIndex, item ->
                                     Box(
                                         modifier = Modifier
                                             .size(
-                                                width = tableItemSize.columnWidthSize[rowId + fixedStartSize],
-                                                height = tableItemSize.rowHeightSize[columnId],
+                                                width = tableItemSize.columnWidthSize[columnIndex + fixedStartSize],
+                                                height = tableItemSize.rowHeightSize[rowIndex],
                                             )
                                             .background(
-                                                color = backgroundColor(columnId, rowId + fixedStartSize),
+                                                color = backgroundColor(rowIndex, columnIndex + fixedStartSize),
                                             )
                                             .drawBehind(onDraw = outlineOnDraw),
-                                        contentAlignment = contentAlignment(columnId, rowId + fixedStartSize),
+                                        contentAlignment = contentAlignment(rowIndex, columnIndex + fixedStartSize),
                                     ) {
                                         item()
                                     }
@@ -155,28 +155,27 @@ fun AutoSizeTable(
 
                 // Fixed left part
                 Column {
-                    content.takeLast(content.size - fixedTopSize)
-                        .forEachIndexed { columnId, columnList ->
-                            Row {
-                                columnList.take(fixedStartSize).forEachIndexed { rowId, item ->
-                                    Box(
-                                        modifier =
-                                        Modifier
-                                            .size(
-                                                width = tableItemSize.columnWidthSize[rowId],
-                                                height = tableItemSize.rowHeightSize[columnId + fixedTopSize],
-                                            )
-                                            .background(
-                                                color = backgroundColor(columnId + fixedTopSize, rowId),
-                                            )
-                                            .drawBehind(onDraw = outlineOnDraw),
-                                        contentAlignment = contentAlignment(columnId + fixedTopSize, rowId),
-                                    ) {
-                                        item()
-                                    }
+                    content.takeLast(content.size - fixedTopSize).forEachIndexed { rowIndex, rowList ->
+                        Row {
+                            rowList.take(fixedStartSize).forEachIndexed { columnIndex, item ->
+                                Box(
+                                    modifier =
+                                    Modifier
+                                        .size(
+                                            width = tableItemSize.columnWidthSize[columnIndex],
+                                            height = tableItemSize.rowHeightSize[rowIndex + fixedTopSize],
+                                        )
+                                        .background(
+                                            color = backgroundColor(rowIndex + fixedTopSize, columnIndex),
+                                        )
+                                        .drawBehind(onDraw = outlineOnDraw),
+                                    contentAlignment = contentAlignment(rowIndex + fixedTopSize, columnIndex),
+                                ) {
+                                    item()
                                 }
                             }
                         }
+                    }
                 }
 
                 // Unfixed part
@@ -187,29 +186,23 @@ fun AutoSizeTable(
                 ) {
                     Column(
                         modifier = if (isFixedTop || isFixedStart) {
-                            Modifier
-                                .horizontalScroll(horizontalScrollState)
+                            Modifier.horizontalScroll(horizontalScrollState)
                         } else {
                             Modifier
                         },
                     ) {
-                        content.takeLast(content.size - fixedTopSize).forEachIndexed { columnId, columnList ->
+                        content.takeLast(content.size - fixedTopSize).forEachIndexed { rowIndex, rowList ->
                             Row {
-                                columnList.takeLast(content.first().size - fixedStartSize).forEachIndexed { rowId, item ->
+                                rowList.takeLast(content.first().size - fixedStartSize).forEachIndexed { columnIndex, item ->
                                     Box(
                                         modifier = Modifier
                                             .size(
-                                                width = tableItemSize.columnWidthSize[rowId + fixedStartSize],
-                                                height = tableItemSize.rowHeightSize[columnId + fixedTopSize],
+                                                width = tableItemSize.columnWidthSize[columnIndex + fixedStartSize],
+                                                height = tableItemSize.rowHeightSize[rowIndex + fixedTopSize],
                                             )
-                                            .background(
-                                                color = backgroundColor(
-                                                    columnId + fixedTopSize,
-                                                    rowId + fixedStartSize,
-                                                ),
-                                            )
+                                            .background(color = backgroundColor(rowIndex + fixedTopSize, columnIndex + fixedStartSize))
                                             .drawBehind(onDraw = outlineOnDraw),
-                                        contentAlignment = contentAlignment(columnId + fixedTopSize, rowId + fixedStartSize),
+                                        contentAlignment = contentAlignment(rowIndex + fixedTopSize, columnIndex + fixedStartSize),
                                     ) {
                                         item()
                                     }
@@ -249,21 +242,21 @@ private fun MeasureTable(
         val heightSizes = MutableList(items.size) { 0.dp }
         val widthSizes = MutableList(items.first().size) { 0.dp }
 
-        val itemsMeasurable = items.mapIndexed { columnId, columnList ->
-            List(columnList.size) { rowId ->
-                subcompose("${columnId}_$rowId") {
-                    items[columnId][rowId]()
+        val itemsMeasurable = items.mapIndexed { rowIndex, rowList ->
+            List(rowList.size) { columnIndex ->
+                subcompose("${rowIndex}_$columnIndex") {
+                    items[rowIndex][columnIndex]()
                 }.first().measure(Constraints())
             }
         }
 
-        items.forEachIndexed { columnId, columnList ->
-            columnList.forEachIndexed { rowId, _ ->
-                val item = itemsMeasurable[columnId][rowId]
+        items.forEachIndexed { rowIndex, rowList ->
+            rowList.forEachIndexed { columnIndex, _ ->
+                val item = itemsMeasurable[rowIndex][columnIndex]
                 val width = item.width.toDp()
                 val height = item.height.toDp()
-                widthSizes[rowId] = maxOf(widthSizes[rowId], width)
-                heightSizes[columnId] = maxOf(heightSizes[columnId], height)
+                widthSizes[columnIndex] = maxOf(widthSizes[columnIndex], width)
+                heightSizes[rowIndex] = maxOf(heightSizes[rowIndex], height)
             }
         }
 
