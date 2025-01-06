@@ -10,7 +10,7 @@ Jetpack Compose library to easily create tables with each item resized。
 ## ▪ Sample
 https://github.com/kosenda/AutoSizeTable/assets/60963155/b9804c80-dc58-4792-b055-56008ce803de
 
-https://github.com/kosenda/AutoSizeTable/blob/99719f4841fab6b03629a178bfdf712bfdfcdd4f/app/src/main/java/ksnd/autosizetable/SampleScreen.kt#L32-L141
+https://github.com/kosenda/AutoSizeTable/blob/dc28402d64bf1f349f3834aae9658b89ab9d4283/app/src/main/java/ksnd/autosizetable/SampleScreen.kt#L31-L120
 
 
 
