@@ -20,13 +20,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ksnd.autosizetable.ui.theme.AutoSizeTableTheme
 
-private const val NUM_OF_ITEMS_IN_EACH_COLUMN = 30
-private const val NUM_OF_ITEMS_IN_EACH_ROW = 20
+private const val NUM_OF_ITEMS_IN_EACH_COLUMN = 20
+private const val NUM_OF_ITEMS_IN_EACH_ROW = 30
 private const val MAX_NUM_OF_MAIL_ICONS = 5
 
 @Composable
@@ -36,7 +35,7 @@ fun SampleScreen() {
     var numMailRowIcons by remember { mutableIntStateOf(1) }
     var numMailColumnIcons by remember { mutableIntStateOf(1) }
 
-    // fixedTopSize to fixedStartSize
+    // fixedTopSize to fixedStartSize (Row to Column)
     val type = listOf(
         1 to 1,
         1 to 0,
@@ -50,32 +49,23 @@ fun SampleScreen() {
         color = MaterialTheme.colorScheme.background,
     ) {
         Column {
-            Row(
-                modifier = Modifier
-                    .horizontalScroll(rememberScrollState()),
-            ) {
+            Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
                 Button(
-                    onClick = {
-                        typeIndex = (typeIndex + 1) % type.size
-                    },
+                    onClick = { typeIndex = (typeIndex + 1) % type.size },
                     modifier = Modifier.padding(start = 8.dp, top = 8.dp),
                 ) {
                     Text("Switch fixed size")
                 }
 
                 Button(
-                    onClick = {
-                        numMailRowIcons = (numMailRowIcons) % MAX_NUM_OF_MAIL_ICONS + 1
-                    },
+                    onClick = { numMailRowIcons = (numMailRowIcons) % MAX_NUM_OF_MAIL_ICONS + 1 },
                     modifier = Modifier.padding(start = 8.dp, top = 8.dp),
                 ) {
                     Text("Switch num of row mail icons")
                 }
 
                 Button(
-                    onClick = {
-                        numMailColumnIcons = (numMailColumnIcons) % MAX_NUM_OF_MAIL_ICONS + 1
-                    },
+                    onClick = { numMailColumnIcons = (numMailColumnIcons) % MAX_NUM_OF_MAIL_ICONS + 1 },
                     modifier = Modifier.padding(start = 8.dp, top = 8.dp, end = 8.dp),
                 ) {
                     Text("Switch num of column mail icons")
@@ -85,10 +75,10 @@ fun SampleScreen() {
             AutoSizeTable(
                 modifier = Modifier.padding(all = 8.dp),
                 outlineColor = colorScheme.outline,
-                content = List(NUM_OF_ITEMS_IN_EACH_COLUMN) { columnId ->
-                    List(NUM_OF_ITEMS_IN_EACH_ROW) { rowId ->
+                content = List(NUM_OF_ITEMS_IN_EACH_ROW) { rowIndex ->
+                    List(NUM_OF_ITEMS_IN_EACH_COLUMN) { columnIndex ->
                         {
-                            if (rowId == 0 && columnId % 2 == 0) {
+                            if (columnIndex == 0 && rowIndex % 2 == 1) {
                                 Column {
                                     repeat(numMailColumnIcons) {
                                         Row {
@@ -106,29 +96,18 @@ fun SampleScreen() {
                                 }
                             } else {
                                 Text(
-                                    text = "rowId: $rowId \ncolumnId: $columnId",
+                                    text = "column: $columnIndex\nrow: $rowIndex",
                                     modifier = Modifier.padding(8.dp),
-                                    fontWeight = if (columnId < type[typeIndex].first) {
-                                        FontWeight.Bold
-                                    } else {
-                                        FontWeight.Normal
-                                    },
                                 )
                             }
                         }
                     }
                 },
-                backgroundColor = { columnId, rowId ->
+                backgroundColor = { rowIndex, columnIndex ->
                     when {
-                        columnId in 0..<type[typeIndex].first -> {
-                            colorScheme.primaryContainer
-                        }
-
-                        rowId in 0..<type[typeIndex].second -> {
-                            colorScheme.tertiaryContainer
-                        }
-
-                        columnId % 2 == 0 -> colorScheme.surface
+                        rowIndex in 0..<type[typeIndex].first -> colorScheme.primaryContainer
+                        columnIndex in 0..<type[typeIndex].second -> colorScheme.tertiaryContainer
+                        rowIndex % 2 == 0 -> colorScheme.surface
                         else -> colorScheme.inverseOnSurface
                     }
                 },
