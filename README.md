@@ -35,3 +35,8 @@ dependencies {
   implementation("com.github.kosenda:AutoSizeTable:<version>")
 }
 ```
+
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=kosenda/AutoSizeTable&type=Date)](https://www.star-history.com/#kosenda/AutoSizeTable&Date)
