@@ -73,8 +73,6 @@ fun SampleScreen() {
             }
 
             AutoSizeTable(
-                modifier = Modifier.padding(all = 8.dp),
-                outlineColor = colorScheme.outline,
                 content = List(NUM_OF_ITEMS_IN_EACH_ROW) { rowIndex ->
                     List(NUM_OF_ITEMS_IN_EACH_COLUMN) { columnIndex ->
                         {
@@ -103,6 +101,10 @@ fun SampleScreen() {
                         }
                     }
                 },
+                modifier = Modifier.padding(all = 8.dp),
+                fixedTopSize = type[typeIndex].first,
+                fixedStartSize = type[typeIndex].second,
+                outlineColor = colorScheme.outline,
                 backgroundColor = { rowIndex, columnIndex ->
                     when {
                         rowIndex in 0..<type[typeIndex].first -> colorScheme.primaryContainer
@@ -112,8 +114,6 @@ fun SampleScreen() {
                     }
                 },
                 contentAlignment = { _, _ -> Alignment.Center },
-                fixedTopSize = type[typeIndex].first,
-                fixedStartSize = type[typeIndex].second,
             )
         }
     }
