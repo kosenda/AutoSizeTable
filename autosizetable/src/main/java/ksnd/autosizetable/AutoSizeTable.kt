@@ -69,15 +69,7 @@ fun AutoSizeTable(
     backgroundColor: (rowIndex: Int, columnIndex: Int) -> Color = { _, _ -> Color.Unspecified },
     contentAlignment: (rowIndex: Int, columnIndex: Int) -> Alignment = { _, _ -> Alignment.Center },
 ) {
-    // Validate input
-    require(content.isNotEmpty()) { "Content must not be empty" }
-    require(content.all { it.size == content.first().size }) { "All rows must have the same number of columns" }
-    require(fixedTopSize >= 0) { "fixedTopSize must be non-negative" }
-    require(fixedStartSize >= 0) { "fixedStartSize must be non-negative" }
-    require(fixedTopSize <= content.size) { "fixedTopSize ($fixedTopSize) must not exceed the number of rows (${content.size})" }
-    require(fixedStartSize <= content.first().size) {
-        "fixedStartSize ($fixedStartSize) must not exceed the number of columns (${content.first().size})"
-    }
+    validateTableParameters(content, fixedTopSize, fixedStartSize)
 
     val isFixedTop = remember(fixedTopSize) { fixedTopSize > 0 }
     val isFixedStart = remember(fixedStartSize) { fixedStartSize > 0 }
@@ -209,6 +201,47 @@ fun AutoSizeTable(
                 }
             }
         }
+    }
+}
+
+/**
+ * Validates the input parameters for AutoSizeTable.
+ *
+ * @param content The table content to validate
+ * @param fixedTopSize Number of fixed rows at the top
+ * @param fixedStartSize Number of fixed columns at the start
+ * @throws IllegalArgumentException if any validation fails
+ */
+private fun validateTableParameters(
+    content: List<List<@Composable () -> Unit>>,
+    fixedTopSize: Int,
+    fixedStartSize: Int,
+) {
+    // Validate content structure
+    require(content.isNotEmpty()) {
+        "Content must not be empty"
+    }
+
+    val columnCount = content.first().size
+    require(content.all { it.size == columnCount }) {
+        "All rows must have the same number of columns"
+    }
+
+    // Validate fixed size parameters
+    require(fixedTopSize >= 0) {
+        "fixedTopSize must be non-negative"
+    }
+    require(fixedStartSize >= 0) {
+        "fixedStartSize must be non-negative"
+    }
+
+    // Validate fixed sizes are within bounds
+    val rowCount = content.size
+    require(fixedTopSize <= rowCount) {
+        "fixedTopSize ($fixedTopSize) must not exceed the number of rows ($rowCount)"
+    }
+    require(fixedStartSize <= columnCount) {
+        "fixedStartSize ($fixedStartSize) must not exceed the number of columns ($columnCount)"
     }
 }
 
