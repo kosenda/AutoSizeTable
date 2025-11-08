@@ -25,7 +25,7 @@ import kotlin.math.sqrt
  */
 data class DragScroll2DConfig(
     val velocityMultiplier: Float = 1.0f,
-    val decelerationFactor: Float = 0.88f,
+    val decelerationFactor: Float = 0.95f,
     val animationSteps: Int = 50,
     val frameDurationMs: Long = 12L,
 )
