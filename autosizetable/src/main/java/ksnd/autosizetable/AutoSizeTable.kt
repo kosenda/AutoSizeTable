@@ -21,7 +21,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -308,36 +311,63 @@ private fun MeasureTable(
     items: List<List<@Composable () -> Unit>>,
     content: @Composable (TableItemSize) -> Unit,
 ) {
-    SubcomposeLayout(modifier = modifier) { constraints ->
-        val rowCount = items.size
-        val columnCount = items.first().size
+    val rowCount = items.size
+    val columnCount = items.first().size
+
+    // State to hold the measured sizes
+    var tableItemSize by remember {
+        mutableStateOf(
+            TableItemSize(
+                columnWidthSize = List(columnCount) { 0.dp },
+                rowHeightSize = List(rowCount) { 0.dp }
+            )
+        )
+    }
+
+    Layout(
+        modifier = modifier,
+        content = {
+            // Compose all items for measurement
+            items.forEachIndexed { rowIndex, rowList ->
+                rowList.forEachIndexed { columnIndex, item ->
+                    Box {
+                        item()
+                    }
+                }
+            }
+            // Compose the actual content with current size information
+            content(tableItemSize)
+        }
+    ) { measurables, constraints ->
+        val itemCount = rowCount * columnCount
 
         val maxHeightPerRow = MutableList(rowCount) { 0.dp }
         val maxWidthPerColumn = MutableList(columnCount) { 0.dp }
 
-        val itemsMeasurable = items.mapIndexed { rowIndex, rowList ->
-            List(rowList.size) { columnIndex ->
-                subcompose("${rowIndex}_$columnIndex") {
-                    items[rowIndex][columnIndex]()
-                }.first().measure(Constraints())
-            }
+        // Measure all items (first itemCount measurables)
+        measurables.take(itemCount).forEachIndexed { index, measurable ->
+            val placeable = measurable.measure(Constraints())
+            val rowIndex = index / columnCount
+            val columnIndex = index % columnCount
+
+            val width = placeable.width.toDp()
+            val height = placeable.height.toDp()
+
+            maxWidthPerColumn[columnIndex] = maxOf(maxWidthPerColumn[columnIndex], width)
+            maxHeightPerRow[rowIndex] = maxOf(maxHeightPerRow[rowIndex], height)
         }
 
-        items.forEachIndexed { rowIndex, rowList ->
-            rowList.forEachIndexed { columnIndex, _ ->
-                val item = itemsMeasurable[rowIndex][columnIndex]
-                val width = item.width.toDp()
-                val height = item.height.toDp()
-                maxWidthPerColumn[columnIndex] = maxOf(maxWidthPerColumn[columnIndex], width)
-                maxHeightPerRow[rowIndex] = maxOf(maxHeightPerRow[rowIndex], height)
-            }
+        // Update state if sizes have changed
+        val newTableItemSize = TableItemSize(maxWidthPerColumn, maxHeightPerRow)
+        if (tableItemSize != newTableItemSize) {
+            tableItemSize = newTableItemSize
         }
 
-        val contentPlaceable = subcompose("content") {
-            content(TableItemSize(maxWidthPerColumn, maxHeightPerRow))
-        }.first().measure(constraints)
+        // Measure the content with the constraints
+        val contentPlaceable = measurables.drop(itemCount).first().measure(constraints)
 
         layout(contentPlaceable.width, contentPlaceable.height) {
+            // Only place the content, not the measurement items
             contentPlaceable.place(0, 0)
         }
     }
