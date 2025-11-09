@@ -60,10 +60,10 @@ import androidx.compose.ui.unit.dp
  *     fixedStartSize = 1
  * )
  *
- * // Advanced usage with custom scroll configuration
+ * // Advanced usage with custom animation configuration
  * val customConfig = DragScroll2DConfig(
- *     velocityMultiplier = 2.0f,
- *     decelerationFactor = 0.85f
+ *     animationSteps = 60,
+ *     frameDurationMs = 16L
  * )
  * val dragScroll2DState = rememberDragScroll2DState(config = customConfig)
  * AutoSizeTable(
