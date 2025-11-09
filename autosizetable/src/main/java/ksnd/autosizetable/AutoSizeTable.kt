@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -21,6 +23,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
@@ -31,6 +34,7 @@ import androidx.compose.ui.unit.dp
  *
  * This composable creates a table that automatically sizes its cells based on content,
  * with support for fixed header rows and columns that remain visible during scrolling.
+ * Supports 2D dragging with smooth inertia scrolling in any direction (vertical, horizontal, or diagonal).
  *
  * @param content Items to display in the table. Each inner list represents a row of cells.
  * @param modifier Modifier for the table container.
@@ -40,18 +44,31 @@ import androidx.compose.ui.unit.dp
  * @param outlineColor Color of the cell borders. Default is Black.
  * @param horizontalScrollState ScrollState for horizontal scroll control.
  * @param verticalScrollState ScrollState for vertical scroll control.
+ * @param dragScroll2DState State manager for 2D drag-based scrolling with inertia. Customize using [DragScroll2DConfig].
  * @param backgroundColor Lambda function to determine background color for each cell based on row and column indices.
  * @param contentAlignment Lambda function to determine content alignment for each cell based on row and column indices.
  *
  * @sample
  * ```
+ * // Basic usage with default 2D scrolling
  * AutoSizeTable(
  *     content = listOf(
  *         listOf({ Text("Header 1") }, { Text("Header 2") }),
  *         listOf({ Text("Cell 1") }, { Text("Cell 2") })
  *     ),
  *     fixedTopSize = 1,
- *     fixedStartSize = 0
+ *     fixedStartSize = 1
+ * )
+ *
+ * // Advanced usage with custom animation configuration
+ * val customConfig = DragScroll2DConfig(
+ *     animationSteps = 60,
+ *     frameDurationMs = 16L
+ * )
+ * val dragScroll2DState = rememberDragScroll2DState(config = customConfig)
+ * AutoSizeTable(
+ *     content = tableData,
+ *     dragScroll2DState = dragScroll2DState
  * )
  * ```
  */
@@ -66,6 +83,7 @@ fun AutoSizeTable(
     outlineColor: Color = Color.Black,
     horizontalScrollState: ScrollState = rememberScrollState(),
     verticalScrollState: ScrollState = rememberScrollState(),
+    dragScroll2DState: DragScroll2DState = rememberDragScroll2DState(horizontalScrollState, verticalScrollState),
     backgroundColor: (rowIndex: Int, columnIndex: Int) -> Color = { _, _ -> Color.Unspecified },
     contentAlignment: (rowIndex: Int, columnIndex: Int) -> Alignment = { _, _ -> Alignment.Center },
 ) {
@@ -73,19 +91,33 @@ fun AutoSizeTable(
 
     val isFixedTop = remember(fixedTopSize) { fixedTopSize > 0 }
     val isFixedStart = remember(fixedStartSize) { fixedStartSize > 0 }
+    val coroutineScope = rememberCoroutineScope()
 
     MeasureTable(
         modifier = modifier,
         items = content,
     ) { tableItemSize ->
+        val scrollableModifier = if (isFixedTop.not() && isFixedStart.not()) {
+            Modifier
+                .horizontalScroll(horizontalScrollState)
+                .verticalScroll(verticalScrollState)
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDragStart = { dragScroll2DState.onDragStart() },
+                        onDrag = { change, dragAmount ->
+                            change.consume()
+                            dragScroll2DState.onDrag(dragAmount.x, dragAmount.y)
+                        },
+                        onDragEnd = { dragScroll2DState.onDragEnd(coroutineScope) },
+                        onDragCancel = { dragScroll2DState.onDragCancel() },
+                    )
+                }
+        } else {
+            Modifier
+        }
+
         Column(
-            modifier = if (isFixedTop.not() && isFixedStart.not()) {
-                Modifier
-                    .horizontalScroll(horizontalScrollState)
-                    .verticalScroll(verticalScrollState)
-            } else {
-                Modifier
-            },
+            modifier = scrollableModifier,
         ) {
             // Fixed top part
             Row {
@@ -142,13 +174,25 @@ fun AutoSizeTable(
             }
 
             // Unfixed top part
-            Row(
-                modifier = if (isFixedStart.not() && isFixedTop.not()) {
-                    Modifier
-                } else {
-                    Modifier.verticalScroll(verticalScrollState)
-                },
-            ) {
+            val unFixedRowModifier = if (isFixedStart.not() && isFixedTop.not()) {
+                Modifier
+            } else {
+                Modifier
+                    .verticalScroll(verticalScrollState)
+                    .pointerInput(Unit) {
+                        detectDragGestures(
+                            onDragStart = { dragScroll2DState.onDragStart() },
+                            onDrag = { change, dragAmount ->
+                                change.consume()
+                                dragScroll2DState.onDrag(dragAmount.x, dragAmount.y)
+                            },
+                            onDragEnd = { dragScroll2DState.onDragEnd(coroutineScope) },
+                            onDragCancel = { dragScroll2DState.onDragCancel() },
+                        )
+                    }
+            }
+
+            Row(modifier = unFixedRowModifier) {
 
                 // Fixed left part
                 Column {
@@ -175,13 +219,25 @@ fun AutoSizeTable(
                     // because it cannot be common OverScrollEffect and results in strange behavior.
                     LocalOverscrollConfiguration provides null,
                 ) {
-                    Column(
-                        modifier = if (isFixedTop || isFixedStart) {
-                            Modifier.horizontalScroll(horizontalScrollState)
-                        } else {
-                            Modifier
-                        },
-                    ) {
+                    val unFixedColumnModifier = if (isFixedTop || isFixedStart) {
+                        Modifier
+                            .horizontalScroll(horizontalScrollState)
+                            .pointerInput(Unit) {
+                                detectDragGestures(
+                                    onDragStart = { dragScroll2DState.onDragStart() },
+                                    onDrag = { change, dragAmount ->
+                                        change.consume()
+                                        dragScroll2DState.onDrag(dragAmount.x, dragAmount.y)
+                                    },
+                                    onDragEnd = { dragScroll2DState.onDragEnd(coroutineScope) },
+                                    onDragCancel = { dragScroll2DState.onDragCancel() },
+                                )
+                            }
+                    } else {
+                        Modifier
+                    }
+
+                    Column(modifier = unFixedColumnModifier) {
                         content.takeLast(content.size - fixedTopSize).forEachIndexed { rowIndex, rowList ->
                             Row {
                                 rowList.takeLast(content.first().size - fixedStartSize).forEachIndexed { columnIndex, item ->
