@@ -8,6 +8,12 @@ Jetpack Compose library to easily create tables with each item resized。
 > [!WARNING]
 > **Poor performance**
 
+## ▪ Features
+
+- 📊 **Auto-sized columns and rows** - Automatically adjust each item's size based on content
+- 🔄 **2D scrolling** - Support for horizontal and vertical scrolling
+- ↗️ **Diagonal scrolling** - Available from v1.2.0, support for simultaneous diagonal scrolling
+
 ## ▪ Sample
 
 https://github.com/user-attachments/assets/0fa91f31-424a-46ad-a224-83201041e2a0
