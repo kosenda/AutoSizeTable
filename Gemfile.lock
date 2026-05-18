@@ -32,7 +32,7 @@ GEM
       ox (~> 2.0)
     danger-plugin-api (1.0.0)
       danger (> 2.0)
-    faraday (2.14.1)
+    faraday (2.14.2)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
@@ -43,7 +43,7 @@ GEM
     git (1.19.1)
       addressable (~> 2.8)
       rchardet (~> 1.8)
-    json (2.19.2)
+    json (2.19.5)
     kramdown (2.5.1)
       rexml (>= 3.3.9)
     kramdown-parser-gfm (1.1.0)
